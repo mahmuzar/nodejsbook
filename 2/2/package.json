@@ -1,0 +1,10 @@
+{
+	"scripts": {
+		"csv2json": "ts-node csvToJsonStreamPure.ts"
+	},
+	"devDependencies": {
+		"@types/node": "^25.0.3",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.3"
+	}
+}
