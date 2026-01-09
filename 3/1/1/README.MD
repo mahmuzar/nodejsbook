@@ -125,6 +125,8 @@ export interface User {
 src/types/index.ts
 
 ```ts
+import { Request } from 'express';
+
 export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
@@ -232,6 +234,15 @@ export function findUserByUsername(username: string): User | undefined {
   const users = readUsers();
   return users.find(u => u.username === username);
 }
+
+export function findUserById(id: number): User | undefined {
+  const users = readUsers();
+  return users.find(u => u.id === id);
+}
+
+export function getAllUsers(): User[] {
+  return readUsers();
+}
 ```
 
 ## [↑](#Содержание) Middleware
@@ -327,6 +338,43 @@ export async function login(req: Request, res: Response): Promise<void> {
 }
 ```
 
+src/controllers/user.controller.ts
+```ts
+// src/controllers/user.controller.ts
+import { Request, Response } from 'express';
+import { findUserByUsername, findUserById } from '../services/userService';
+import { AuthRequest } from '../types';
+
+// GET /api/me
+export async function getProfile(req: AuthRequest, res: Response): Promise<void> {
+  if (!req.user) {
+    res.status(401).json({ error: 'Пользователь не авторизован' });
+    return;
+  }
+
+  const user = findUserById(req.user.id);
+  if (!user) {
+    res.status(404).json({ error: 'Пользователь не найден' });
+    return;
+  }
+
+  res.json({
+    id: user.id,
+    username: user.username
+    // ⚠️ Никогда не возвращай password!
+  });
+}
+
+// GET /api/users (только для демонстрации!)
+export async function getUsers(_req: Request, res: Response): Promise<void> {
+  const users = getAllUsers().map(u => ({
+    id: u.id,
+    username: u.username
+  }));
+  res.json(users);
+}
+```
+
 ## [↑](#Содержание) Роуты
 src/routes/auth.routes.ts
 
@@ -338,6 +386,21 @@ const router = Router();
 
 router.post('/register', register);
 router.post('/login', login);
+
+export default router;
+```
+
+src/routes/user.routes.ts
+
+```ts
+// src/routes/user.routes.ts
+import { Router } from 'express';
+import { getProfile, getUsers } from '../controllers/user.controller';
+
+const router = Router();
+
+router.get('/me', getProfile);      // текущий пользователь
+router.get('/users', getUsers);     // список всех (только для демо!)
 
 export default router;
 ```
