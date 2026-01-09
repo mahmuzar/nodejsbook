@@ -40,3 +40,14 @@ export function findUserByUsername(username: string): User | undefined {
   const users = readUsers();
   return users.find(u => u.username === username);
 }
+
+// ... существующий код ...
+
+export function findUserById(id: number): User | undefined {
+  const users = readUsers();
+  return users.find(u => u.id === id);
+}
+
+export function getAllUsers(): User[] {
+  return readUsers();
+}
