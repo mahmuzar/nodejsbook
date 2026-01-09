@@ -1,6 +1,6 @@
 // src/controllers/user.controller.ts
 import { Request, Response } from 'express';
-import { findUserByUsername, findUserById } from '../services/userService';
+import { findUserByUsername, findUserById, getAllUsers } from '../services/userService';
 import { AuthRequest } from '../types';
 
 // GET /api/me
