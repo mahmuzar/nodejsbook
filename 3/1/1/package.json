@@ -1,1 +1,7 @@
-
+{
+  "scripts": {
+    "dev": "ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  }
+}
