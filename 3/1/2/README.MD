@@ -1,5 +1,14 @@
-Полный перевод микросервиса с асинхронной обработкой через Kafka на Node.js на TypeScript, включая типизацию, структуру проекта и рекомендации по сборке.
+Пример микросервиса на TypeScript с использованием Kafka, DLQ, асинхронной обработкой и чистой архитектурой, включая:
+
+Задача показать работу с кафкой
 ____
+
+- Точку входа main.ts
+- Выделенный HTTP-модуль app.ts
+- Отдельные Kafka-модули: producer.ts и consumer.ts
+- Поддержку graceful shutdown
+- Готовность к собеседованию
+
 ## Содержание
 
 1. [Структура проекта](#--Структура-проекта)
@@ -15,12 +24,14 @@ ____
 ## [↑](#Содержание) 📁 Структура проекта
 
 ```csv
-kafka-microservice/
+kafka-async-service/
 ├── src/
 │   ├── types.ts
-│   ├── producer.ts
-│   ├── consumer.ts
-│   └── server.ts
+│   ├── app.ts
+│   ├── main.ts
+│   └── kafka/
+│       ├── producer.ts
+│       └── consumer.ts
 ├── package.json
 ├── tsconfig.json
 └── docker-compose.yml  (остаётся без изменений)
@@ -61,6 +72,19 @@ export interface NotificationEvent {
   message: string;
   timestamp: number;
   eventId: string;
+}
+
+export interface DlqMessage {
+  originalTopic: string;
+  partition: number;
+  offset: string;
+  error: {
+    message: string;
+    stack?: string;
+    timestamp: number;
+  };
+  payload: unknown;
+  retryCount: number;
 }
 ```
 
@@ -181,12 +205,11 @@ run().catch(console.error);
 
 ```json
 {
+  "name": "kafka-notification-service",
   "scripts": {
     "build": "tsc",
-    "start:producer": "ts-node src/server.ts",
-    "start:consumer": "ts-node src/consumer.ts",
-    "prod:producer": "node dist/server.js",
-    "prod:consumer": "node dist/consumer.js"
+    "start:api": "ts-node src/main.ts",
+    "start:consumer": "ts-node src/kafka/consumer.ts"
   }
 }
 ```
@@ -194,10 +217,10 @@ run().catch(console.error);
 ## [↑](#Содержание) Запуск в режиме разработки
 
 ```bash
-# Терминал 1
-npm run start:producer
+# Терминал 1: API
+npm run start:api
 
-# Терминал 2
+# Терминал 2: Consumer
 npm run start:consumer
 ```
 
