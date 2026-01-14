@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "build": "tsc",
-    "start:producer": "ts-node src/server.ts",
-    "start:consumer": "ts-node src/consumer.ts",
-    "prod:producer": "node dist/server.js",
-    "prod:consumer": "node dist/consumer.js"
-  }
-}
