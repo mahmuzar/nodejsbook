@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 meta
-  name: {{ include "your-microservice.fullname" . }}
+  name: {{ include "nodejsbook.fullname" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "your-microservice.name" . }}
+      app.kubernetes.io/name: {{ include "nodejsbook.name" . }}
   template:
     meta
       labels:
-        app.kubernetes.io/name: {{ include "your-microservice.name" . }}
+        app.kubernetes.io/name: {{ include "nodejsbook.name" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -20,7 +20,7 @@ spec:
             - containerPort: {{ .Values.service.targetPort }}
           envFrom:
             - configMapRef:
-                name: {{ include "your-microservice.fullname" . }}-config
+                name: {{ include "nodejsbook.fullname" . }}-config
           livenessProbe:
             httpGet:
               path: /health

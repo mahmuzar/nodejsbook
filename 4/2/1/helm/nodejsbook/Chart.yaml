@@ -1,5 +1,5 @@
 apiVersion: v2
-name: your-microservice
+name: nodejsbook
 description: A Clean Architecture microservice with Keycloak auth
 type: application
 version: 0.1.0

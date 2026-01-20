@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 meta
-  name: {{ include "your-microservice.fullname" . }}
+  name: {{ include "nodejsbook.fullname" . }}
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
@@ -23,7 +23,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "your-microservice.fullname" . }}
+                name: {{ include "nodejsbook.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
 {{- end }}

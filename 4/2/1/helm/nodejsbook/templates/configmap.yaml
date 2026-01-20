@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 meta
-  name: {{ include "your-microservice.fullname" . }}-config
+  name: {{ include "nodejsbook.fullname" . }}-config
 
   KEYCLOAK_ISSUER: "{{ .Values.keycloak.issuer }}"
   PORT: "{{ .Values.env.PORT }}"

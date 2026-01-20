@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: your-registry/your-microservice
+  repository: nodejsbook
   tag: latest
   pullPolicy: IfNotPresent
 
