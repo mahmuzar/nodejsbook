@@ -2,7 +2,7 @@
   "name": "your-microservice",
   "version": "1.0.0",
   "scripts": {
-    "start": "nest start",
+    "start": "node main",
     "test": "jest"
   },
   "dependencies": {
