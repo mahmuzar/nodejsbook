@@ -1,0 +1,6 @@
+apiVersion: v2
+name: your-microservice
+description: A Clean Architecture microservice with Keycloak auth
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

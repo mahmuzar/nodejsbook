@@ -1,0 +1,32 @@
+replicaCount: 2
+
+image:
+  repository: your-registry/your-microservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+keycloak:
+  issuer: "https://keycloak.prod.svc.cluster.local/auth/realms/myapp"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "microservice.your-domain.com"
+  tls: true
+  tlsSecretName: "microservice-tls"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+env:
+  PORT: "3000"
