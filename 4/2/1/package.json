@@ -1,5 +1,5 @@
 {
-  "name": "your-microservice",
+  "name": "nodejsbook",
   "version": "1.0.0",
   "scripts": {
     "start": "node main",
