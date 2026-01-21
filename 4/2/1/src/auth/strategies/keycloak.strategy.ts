@@ -1,49 +1,58 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { JwksClient } from 'jwks-rsa'; // ← Исправлен импорт
+import jwksClient from 'jwks-rsa';
 
 @Injectable()
 export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
   private readonly logger = new Logger(KeycloakStrategy.name);
+  private jwksClientInstance: ReturnType<typeof jwksClient> | null = null;
 
   constructor(private config: ConfigService) {
-    super()
-    const issuer = this.config.get<string>('KEYCLOAK_ISSUER');
-    if (!issuer) {
-      throw new Error('KEYCLOAK_ISSUER is not defined in environment variables');
-    }
-
-    // Создаём экземпляр через `new JwksClient`
-    const client = new JwksClient({
-      jwksUri: `${issuer}/protocol/openid-connect/certs`,
-      timeout: 5000,
-      cache: true,
-    });
-
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      issuer,
       algorithms: ['RS256'],
+      secretOrKey: null,
       secretOrKeyProvider: (header, payload, done) => {
-        if (!header?.kid) {
-          return done(new UnauthorizedException('Missing kid in JWT header'));
-        }
-        client.getSigningKey(header.kid, (err, key) => {
-          if (err) {
-            this.logger.error(`JWKS error: ${err.message}`, err.stack);
-            return done(new UnauthorizedException('Unable to verify token'));
+        try {
+          if (!this.jwksClientInstance) {
+            const issuer = this.config.get<string>('KEYCLOAK_ISSUER', '');
+            if (!issuer) {
+              return done(new Error('KEYCLOAK_ISSUER is not set in environment'));
+            }
+            this.jwksClientInstance = jwksClient({
+              jwksUri: `${issuer}/protocol/openid-connect/certs`,
+              timeout: 5000,
+              cache: true,
+            });
           }
-          const signingKey = key.getPublicKey();
-          done(null, signingKey);
-        });
+
+          if (!header?.kid) {
+            return done(new UnauthorizedException('Missing kid in JWT header'));
+          }
+
+          this.jwksClientInstance.getSigningKey(header.kid, (err, key) => {
+            if (err) {
+              this.logger.error(`JWKS error: ${err.message}`);
+              return done(new UnauthorizedException('Unable to verify token'));
+            }
+            const signingKey = key.getPublicKey();
+            done(null, signingKey);
+          });
+        } catch (error) {
+          done(error);
+        }
       },
     });
   }
 
   validate(payload: any): any {
+    const expectedIssuer = this.config.get<string>('KEYCLOAK_ISSUER');
+    if (payload.iss !== expectedIssuer) {
+      throw new UnauthorizedException('Invalid token issuer');
+    }
     if (!payload.sub) {
       throw new UnauthorizedException('Invalid token: missing subject');
     }
