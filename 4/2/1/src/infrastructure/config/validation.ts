@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsString, IsInt, validateSync } from 'class-validator';
+import { validateSync, IsString, IsInt } from 'class-validator';
 
 class EnvironmentVariables {
   @IsString()
@@ -9,13 +9,19 @@ class EnvironmentVariables {
   PORT!: number;
 }
 
-export const validationSchema = (config: Record<string, unknown>): EnvironmentVariables => {
+// Экспортируем ФУНКЦИЮ валидации (именно так ожидает @nestjs/config)
+export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
-  const errors = validateSync(validatedConfig, { skipMissingProperties: false });
+
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
   if (errors.length > 0) {
     throw new Error(errors.toString());
   }
+
   return validatedConfig;
-};
+}

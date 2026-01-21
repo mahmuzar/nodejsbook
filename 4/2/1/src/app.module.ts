@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { validationSchema } from './infrastructure/config/validation';
+import { validate } from './infrastructure/config/validation';
 import { HealthController } from './interfaces/controllers/health.controller';
 import { ProtectedController } from './interfaces/controllers/protected.controller';
 import { CheckHealthUseCase } from './application/use-cases/check-health.use-case';
@@ -11,7 +11,7 @@ import { KeycloakStrategy } from './auth/strategies/keycloak.strategy';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, validationSchema }),
+    ConfigModule.forRoot({ isGlobal: true, validate }),
     PassportModule.register({ defaultStrategy: 'keycloak' }),
   ],
   controllers: [HealthController, ProtectedController],
@@ -24,4 +24,4 @@ import { KeycloakStrategy } from './auth/strategies/keycloak.strategy';
     KeycloakStrategy,
   ],
 })
-export class AppModule {}
+export class AppModule { }

@@ -9,6 +9,7 @@ export class KeycloakStrategy extends PassportStrategy(Strategy, 'keycloak') {
   private readonly logger = new Logger(KeycloakStrategy.name);
 
   constructor(private config: ConfigService) {
+    super()
     const issuer = this.config.get<string>('KEYCLOAK_ISSUER');
     if (!issuer) {
       throw new Error('KEYCLOAK_ISSUER is not defined in environment variables');
