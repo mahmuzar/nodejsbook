@@ -17,7 +17,7 @@ ingress:
   enabled: true
   className: "nginx"
   host: "nodejsbook.mahmuzar"
-  tls: true
+  tls: false
   tlsSecretName: "microservice-tls"
 
 resources:

@@ -2,8 +2,10 @@
   "name": "nodejsbook",
   "version": "1.0.0",
   "scripts": {
+    
     "build": "nest build",
-    "start": "node dist/main"
+    "start": "node dist/main",
+    "start:dev": "nest start --watch"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
