@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { KeycloakGuard } from '../../auth/guards/keycloak.guard';
 import { HealthResponseDto } from '../../domain/dtos/health.response.dto';
@@ -15,7 +15,7 @@ export class ProtectedController {
   @ApiOperation({ summary: 'Защищённый эндпоинт' })
   @ApiResponse({ status: 200, type: HealthResponseDto })
   @ApiResponse({ status: 401, description: 'Требуется валидный JWT от Keycloak' })
-  async getData(@Request() req): Promise<HealthResponseDto> {
+  async getData(@Req() req): Promise<HealthResponseDto> {
     console.log('User:', req.user);
     const entity = await this.useCase.execute();
     return {
